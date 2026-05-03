@@ -44,7 +44,7 @@ A `benchmarks/servers.yaml` registry is auto-discovered for resolving server nam
 - **evolve-the-file** — bench across a sequence of file edits using `didChange:` snapshots
 - **extra-files** — open additional files mid-session via `didOpen:` and re-run on the original cursor
 - **cold-vs-warm** — choose between cold-start (`cold: true`) and warm benches
-- **lifecycle-tests** — full file-rename / create / delete lifecycle via `renameSteps`, `createSteps`, `deleteSteps`
+- **lifecycle-tests** — full file-rename / create / delete lifecycle via `renameFiles`, `createFiles`, `deleteFiles`
 - **custom-init-settings** — send custom configuration to the LSP via `initializeSettings:`
 - **commands** — invoke server-defined commands via `workspace/executeCommand`
 

@@ -51,7 +51,7 @@ methods:
     col:  32
 ```
 
-Step-shaped values (`batch:`, `didChange:`, `didOpen:`, `renameSteps:`, etc.) take their own `line`/`col` per step. The method's own `line`/`col` is the baseline iteration; each step is one further iteration.
+Step-shaped values (`batch:`, `didChange:`, `didOpen:`, `renameFiles:`, etc.) take their own `line`/`col` per step. The method's own `line`/`col` is the baseline iteration; each step is one further iteration.
 
 ### `benchmarks` × `exclude` × `methods`
 

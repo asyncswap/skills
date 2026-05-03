@@ -1,13 +1,13 @@
 ---
 name: lifecycle-tests
-description: Test full file-rename / create / delete lifecycles via `renameSteps:`, `createSteps:`, and `deleteSteps:`. Each step exercises the LSP's request → apply edits → on-disk operation → notification → re-index cycle and restores the project at the end.
+description: Test full file-rename / create / delete lifecycles via `renameFiles:`, `createFiles:`, and `deleteFiles:`. Each step exercises the LSP's request → apply edits → on-disk operation → notification → re-index cycle and restores the project at the end.
 ---
 
 # Lifecycle tests
 
 `workspace/will{Rename,Create,Delete}Files` doesn't just compute a `WorkspaceEdit` — the editor *actually applies* the edits, performs the file op, and notifies via `did{Rename,Create,Delete}Files`. The harness reproduces this end-to-end so cross-file effects (import updates, cache invalidations) are exercised, then restores the project.
 
-## File rename — `renameSteps:`
+## File rename — `renameFiles:`
 
 ```yaml
 initializeSettings:
@@ -17,7 +17,7 @@ initializeSettings:
 methods:
   workspace/willRenameFiles:
     waitForProgressToken: "<token>"
-    renameSteps:
+    renameFiles:
       - { file: A.sol,  newName: AA.sol, expect: { count: 1 } }
       - { file: AA.sol, newName: A.sol,  expect: { count: 1 } }
       - { file: A.sol,  newName: AA.sol, expect: { count: 1 } }
@@ -30,7 +30,7 @@ Each step runs: `willRenameFiles` → apply returned edits to disk → `mv oldUr
 
 Round-trips (`A → AA → A → AA → A`) catch idempotency bugs in the import-update logic.
 
-## File creation — `createSteps:`
+## File creation — `createFiles:`
 
 ```yaml
 initializeSettings:
@@ -39,14 +39,14 @@ initializeSettings:
 
 methods:
   workspace/willCreateFiles:
-    createSteps:
+    createFiles:
       - file: src/NewContract.sol
         expect: { count: 1 }
 ```
 
 Each step runs: `willCreateFiles` → apply scaffold edits → create the file on disk → `didCreateFiles`. Created files are deleted at the end.
 
-## File deletion — `deleteSteps:`
+## File deletion — `deleteFiles:`
 
 ```yaml
 initializeSettings:
@@ -56,7 +56,7 @@ initializeSettings:
 methods:
   workspace/willDeleteFiles:
     waitForProgressToken: "<token>"
-    deleteSteps:
+    deleteFiles:
       - file: src/ToBeDeleted.sol
         expect: { count: 1 }
 ```

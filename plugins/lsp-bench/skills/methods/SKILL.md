@@ -217,16 +217,16 @@ Validation: `arguments` shape is server-specific; consult server docs.
 
 ```yaml
 # Schema: methods.workspace/willRenameFiles
-renameSteps:            RenameFile[]           # REQUIRED, non-empty
+renameFiles:            RenameFile[]           # REQUIRED, non-empty
 waitForProgressToken?:  string                 # required when LSP reindexes async after rename
 cold?:                  boolean
 
 # Schema: methods.workspace/willCreateFiles
-createSteps:            CreateFile[]           # REQUIRED, non-empty
+createFiles:            CreateFile[]           # REQUIRED, non-empty
 cold?:                  boolean
 
 # Schema: methods.workspace/willDeleteFiles
-deleteSteps:            DeleteFile[]           # REQUIRED, non-empty
+deleteFiles:            DeleteFile[]           # REQUIRED, non-empty
 waitForProgressToken?:  string
 cold?:                  boolean
 ```
@@ -326,7 +326,7 @@ Quick lookup — which cross-cutting key applies to which method?
 | `didOpen:` (`extra-files`) | ✅ when testing cross-file discovery growth | rarely | rarely |
 | `cold:` (`cold-vs-warm`) | ✅ all | ✅ all | ✅ all |
 | `initializeSettings:` (`custom-init-settings`) | ✅ when feature gated | ✅ same | ✅ for fileOperations |
-| `renameSteps`/`createSteps`/`deleteSteps` (`lifecycle-tests`) | n/a | n/a | ✅ for `will*Files` |
+| `renameFiles`/`createFiles`/`deleteFiles` (`lifecycle-tests`) | n/a | n/a | ✅ for `will*Files` |
 
 ## Method-specific keys at a glance
 
@@ -337,6 +337,6 @@ Quick lookup — which cross-cutting key applies to which method?
 | `textDocument/inlayHint` | `startLine`/`startCol` (range start) | yes |
 | `textDocument/semanticTokens/range` | `startLine`/`startCol` | yes |
 | `workspace/executeCommand` | `command:`, `arguments:`, `waitForProgress:` | `command:` required |
-| `workspace/willRenameFiles` | `renameSteps:` | yes |
-| `workspace/willCreateFiles` | `createSteps:` | yes |
-| `workspace/willDeleteFiles` | `deleteSteps:` | yes |
+| `workspace/willRenameFiles` | `renameFiles:` | yes |
+| `workspace/willCreateFiles` | `createFiles:` | yes |
+| `workspace/willDeleteFiles` | `deleteFiles:` | yes |

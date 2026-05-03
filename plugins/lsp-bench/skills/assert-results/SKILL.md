@@ -31,7 +31,7 @@ methods:
     expect: { titleContains: "Remove unused import" }   # at least one action with this title
 
   workspace/willRenameFiles:
-    renameSteps:
+    renameFiles:
       - file: A.sol
         newName: AA.sol
         expect: { count: 1 }              # number of *files* with edits
@@ -39,7 +39,7 @@ methods:
 
 ## Per-step assertions
 
-When using `batch:`, `didChange:`, `didOpen:`, `renameSteps:`, `createSteps:`, or `deleteSteps:`, each step takes its own `expect:`. The top-level method `expect:` (if any) covers the baseline iteration; per-step `expect:` covers that step.
+When using `batch:`, `didChange:`, `didOpen:`, `renameFiles:`, `createFiles:`, or `deleteFiles:`, each step takes its own `expect:`. The top-level method `expect:` (if any) covers the baseline iteration; per-step `expect:` covers that step.
 
 ```yaml
 methods:

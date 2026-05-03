@@ -1,7 +1,7 @@
 {
   "name": "lsp-bench",
   "version": "0.1.0",
-  "description": "Test, validate, and benchmark performance of LSP servers from Claude Code — a YAML-only framework powered by lsp-bench. Config scaffolding, multi-cursor consistency checks, replay, and version-comparison workflows.",
+  "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, and version comparisons.",
   "author": {
     "name": "Asyncswap Labs",
     "email": "lsp@asyncswap.org",

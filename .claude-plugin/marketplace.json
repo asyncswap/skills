@@ -37,7 +37,7 @@
     },
     {
       "name": "lsp-bench",
-      "description": "Test, validate, and benchmark performance of LSP servers using only YAML — powered by lsp-bench. Config scaffolding, multi-cursor consistency checks, replay, and version comparisons.",
+      "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, and version comparisons.",
       "version": "0.1.0",
       "author": {
         "name": "mmsaki",

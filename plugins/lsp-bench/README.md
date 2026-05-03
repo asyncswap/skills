@@ -1,6 +1,6 @@
 # lsp-bench
 
-Helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) YAML configs — performance benchmarks, correctness checks (`batch:` symmetry), lifecycle tests, and version comparisons for any LSP server. Schema-style reference for every supported LSP method plus topic skills for cross-cutting features (`waitForProgressToken`, `expect:`, `didChange:`, `cold:`, etc.).
+Helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) YAML configs — performance benchmarks, checks that the same method returns the same answer from different files (`batch:`), file-rename / create / delete lifecycle tests, and side-by-side comparisons across LSP versions. Schema-style reference for every supported LSP method, plus topic skills for cross-cutting settings (`waitForProgressToken`, `expect:`, `didChange:`, `cold:`, etc.).
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ A `benchmarks/servers.yaml` registry is auto-discovered for resolving server nam
 **Topic skills** (problem → solution)
 - **wait-for-token** — wait for a specific LSP `$/progress` token before / after the request (`waitForProgressToken`, `waitForProgress`)
 - **assert-results** — verify response shape with `expect:` (`minCount`, `containsItems`, `file`/`line`, `contains`, `titleContains`, `count`)
-- **multi-file** — run the same method against multiple files / cursors with `batch:`; symmetry-check side-effect for cross-file correctness
+- **multi-file** — run the same method against multiple files / cursors with `batch:`; flags when the same method returns different sets from different places
 - **evolve-the-file** — bench across a sequence of file edits using `didChange:` snapshots
 - **extra-files** — open additional files mid-session via `didOpen:` and re-run on the original cursor
 - **cold-vs-warm** — choose between cold-start (`cold: true`) and warm benches

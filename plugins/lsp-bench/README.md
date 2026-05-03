@@ -1,6 +1,6 @@
 # lsp-bench
 
-A Claude Code plugin that helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) YAML configs — performance benchmarks, correctness checks, lifecycle tests, and version comparisons for any LSP server.
+Helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) YAML configs — performance benchmarks, correctness checks (`batch:` symmetry), lifecycle tests, and version comparisons for any LSP server. Schema-style reference for every supported LSP method plus topic skills for cross-cutting features (`waitForProgressToken`, `expect:`, `didChange:`, `cold:`, etc.).
 
 ## Prerequisites
 

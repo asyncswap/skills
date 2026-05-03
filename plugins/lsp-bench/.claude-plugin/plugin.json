@@ -1,0 +1,22 @@
+{
+  "name": "lsp-bench",
+  "version": "0.1.0",
+  "description": "Benchmark and validate LSP servers from Claude Code — config scaffolding, symmetry checks, replay, and version-comparison workflows powered by lsp-bench",
+  "author": {
+    "name": "Asyncswap Labs",
+    "email": "lsp@asyncswap.org",
+    "url": "https://github.com/asyncswap"
+  },
+  "homepage": "https://github.com/asyncswap/lsp-bench",
+  "repository": "https://github.com/asyncswap/lsp-bench",
+  "license": "MIT",
+  "keywords": [
+    "lsp",
+    "language-server",
+    "benchmark",
+    "solidity",
+    "performance",
+    "regression",
+    "correctness"
+  ]
+}

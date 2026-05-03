@@ -1,6 +1,6 @@
 # lsp-bench
 
-A Claude Code plugin that scaffolds, runs, and interprets [lsp-bench](https://github.com/asyncswap/lsp-bench) workflows for Solidity language servers — performance regression checks, correctness symmetry checks, request replay, and side-by-side version comparisons.
+A Claude Code plugin that helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) YAML configs — performance benchmarks, correctness checks, lifecycle tests, and version comparisons for any LSP server.
 
 ## Prerequisites
 
@@ -31,11 +31,22 @@ A `benchmarks/servers.yaml` registry is auto-discovered for resolving server nam
 
 ## Skills
 
-- **bench-init** — scaffold a `benchmark.yaml` for a target file/method, with reasonable defaults for cursor position, iterations, and timeouts
-- **bench-symmetry** — multi-cursor correctness check using the `batch` config: every cursor on the same symbol must return the same response set (catches subset-bugs in `references`/`definition`/`implementation`)
-- **bench-compare** — run a config against multiple LSP versions and produce a side-by-side diff of timings and response sets
-- **bench-replay** — replay a captured JSON-RPC request from a benchmark output back at a server (great for debugging a specific failure)
-- **bench-debug** — diagnose unexpected results from a recent benchmark run by inspecting the response, comparing to grep ground truth, and tracing the indexing-progress timeline
+**Orientation**
+- **setup** — project layout, `servers.yaml` registry, top-level config keys (`benchmarks`, `exclude`, `methods`, etc.), shared defaults via `include:`
+
+**Method reference**
+- **methods** — minimum-viable YAML for every LSP method `lsp-bench` supports, plus method-unique knobs (`trigger`, `newName`, range fields, `command`/`arguments`, …) and a knob-compatibility matrix
+
+**Topic skills** (problem → solution)
+- **wait-for-token** — wait for a specific LSP `$/progress` token before / after the request (`waitForProgressToken`, `waitForProgress`)
+- **assert-results** — verify response shape with `expect:` (`minCount`, `containsItems`, `file`/`line`, `contains`, `titleContains`, `count`)
+- **multi-file** — run the same method against multiple files / cursors with `batch:`; symmetry-check side-effect for cross-file correctness
+- **evolve-the-file** — bench across a sequence of file edits using `didChange:` snapshots
+- **extra-files** — open additional files mid-session via `didOpen:` and re-run on the original cursor
+- **cold-vs-warm** — choose between cold-start (`cold: true`) and warm benches
+- **lifecycle-tests** — full file-rename / create / delete lifecycle via `renameSteps`, `createSteps`, `deleteSteps`
+- **custom-init-settings** — send custom configuration to the LSP via `initializeSettings:`
+- **commands** — invoke server-defined commands via `workspace/executeCommand`
 
 ## License
 

@@ -51,6 +51,7 @@ didOpen?:               DidOpenStep[]
 ```
 
 Validation:
+
 - `line`/`col` must point at the symbol identifier (not whitespace).
 - `waitForProgressToken` recommended for cross-file methods (`references`, `definition`, `declaration`, `implementation`, `typeDefinition`, `prepareCallHierarchy`).
 - `documentHighlight` is intra-file — `waitForProgressToken` not required.
@@ -73,8 +74,9 @@ didOpen?:               DidOpenStep[]
 ```
 
 Validation:
+
 - `col` must be **after** the trigger character, not on it.
-- `trigger` value (string) must match the configured trigger character on the server (`.`, `(`, `,`, `[`, `:`, etc.).
+- `trigger` value (string) must match the configured trigger character on the server (`.`, `(`, `,`, `[`, `"`, `'`, `/`, etc.).
 
 ### `textDocument/signatureHelp`
 
@@ -149,6 +151,7 @@ didChange?:             FileSnapshot[]         # idiomatic for `formatting` (sen
 ```
 
 Validation:
+
 - `formatting` typically pairs with `didChange:` — sends an unformatted snapshot, asserts the formatter returns canonicalizing edits.
 - `semanticTokens/full/delta` requires a prior `/full` to seed; the harness chains.
 - `codeLens`, `documentColor`, `diagnostic` may return null on servers that don't implement them — add to top-level `exclude:` if so.
@@ -229,6 +232,7 @@ cold?:                  boolean
 ```
 
 Required `initializeSettings.fileOperations` flags:
+
 - `updateImportsOnRename: true` for `willRenameFiles` to compute import edits
 - `templateOnCreate: true` for `willCreateFiles` to scaffold
 - `updateImportsOnDelete: true` for `willDeleteFiles` to clean up dependents

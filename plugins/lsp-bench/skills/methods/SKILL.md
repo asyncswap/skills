@@ -1,439 +1,318 @@
 ---
 name: methods
-description: Per-method YAML reference for every LSP method `lsp-bench` supports. Each entry shows the minimum-viable form plus every optional knob the method accepts. Use to look up "what can I do with `textDocument/<X>`?". Cross-cutting features are documented in topic skills (`expect`, `batch`, `didChange`, `waitForProgressToken`, …).
+description: Per-method config schema for every LSP method `lsp-bench` supports. Lists every key valid under each `methods.<method>:` block — required, optional, type, default. Use to validate what a method's config can or cannot do.
 ---
 
-# LSP method YAML reference
+# Method config schema reference
 
-Each section gives the **minimum-viable YAML** plus a **fully-decked-out** example showing every knob applicable to that method. Pick what you need.
+Every key valid under a `methods.<method>:` block, per LSP method. Cross-cutting keys (work on every method) are listed once; method-specific keys are called out per method.
 
-The bare shape is always:
+## Conventions
 
-```yaml
-file: src/path/to/Target.sol
-line: 0       # 0-indexed (LSP convention)
-col:  0       # 0-indexed
+- `?` after a key name = optional
+- Top-level `line` / `col` are the **default cursor for every method**. Each method block can override.
+- `expect:` shape varies per method (see `assert-results` skill for full shape).
+- Sub-types (`BatchStep`, `FileSnapshot`, `DidOpenStep`, `RenameStep`, `CreateStep`, `DeleteStep`, `ExpectConfig`) are defined at the bottom.
 
-methods:
-  <lsp/method>: {}                   # minimum — request fires at top-level (line, col)
-```
+## Cross-cutting keys
 
-The method's own block can be empty. Add knobs as needed. Cross-cutting knobs (`expect`, `batch`, `didChange`, `waitForProgressToken`, etc.) work on **every** method below — see the corresponding topic skill for full semantics.
-
----
-
-## Position-based (cursor on an identifier)
-
-Applies to: `textDocument/references`, `textDocument/definition`, `textDocument/declaration`, `textDocument/implementation`, `textDocument/typeDefinition`, `textDocument/hover`, `textDocument/documentHighlight`, `textDocument/prepareRename`, `textDocument/prepareCallHierarchy`, `textDocument/selectionRange`.
-
-Cursor on the symbol identifier. Whitespace fallback hits the smallest enclosing AST node and produces a misleading wide-reach response.
-
-### Minimum
+These are valid under **every** `methods.<method>:` block:
 
 ```yaml
-methods:
-  textDocument/references: {}
+# Cross-cutting MethodConfig keys
+line:                  integer?                # override top-level cursor (line)
+col:                   integer?                # override top-level cursor (col)
+cold:                  boolean                 # default false — fresh server per iteration
+waitForProgressToken:  string?                 # block until $/progress end matches this token
+waitForProgress:       boolean                 # default false — wait for any $/progress end after the response
+expect:                ExpectConfig?           # response shape assertions
+batch:                 BatchStep[]             # default [] — multi-cursor probes (see `multi-file` skill)
+didChange:             FileSnapshot[]          # default [] — snapshot sequence (see `evolve-the-file` skill)
+didOpen:               DidOpenStep[]           # default [] — open extras mid-session (see `extra-files` skill)
 ```
 
-### Fully-decked-out
+## Position-based methods
+
+Cursor on an identifier; whitespace fallback hits the smallest enclosing AST node.
+
+Methods: `textDocument/references`, `textDocument/definition`, `textDocument/declaration`, `textDocument/implementation`, `textDocument/typeDefinition`, `textDocument/hover`, `textDocument/documentHighlight`, `textDocument/prepareRename`, `textDocument/prepareCallHierarchy`, `textDocument/selectionRange`.
 
 ```yaml
-methods:
-  textDocument/references:
-    line: 22                                  # optional: override top-level cursor
-    col:  8                                   # optional
-    cold: true                                # optional: fresh server per iteration
-    waitForProgressToken: "<token>"           # optional: block until LSP token ends
-    expect: { minCount: 1 }                   # optional: assert response shape
-    batch:                                    # optional: multi-cursor probes
-      - { file: src/Foo.sol,    line: 22,  col: 8  }
-      - { file: tests/Foo.t.sol, line: 55,  col: 18 }
-    didChange:                                # optional: re-bench across edits
-      - file: Target.v2.snapshot
-        line: 21
-        col:  8
-        expect: { minCount: 1 }
-    didOpen:                                  # optional: open more files mid-session
-      - file: src/Importer.sol
-        expect: { minCount: 5 }
+# Schema: methods.textDocument/<position-method>
+# (only cross-cutting keys — no method-specific keys)
+line?:                  integer
+col?:                   integer
+cold?:                  boolean
+waitForProgressToken?:  string
+expect?:                ExpectConfig
+batch?:                 BatchStep[]
+didChange?:             FileSnapshot[]
+didOpen?:               DidOpenStep[]
 ```
 
-### Notes per method
-
-- `references`, `definition`, `declaration`, `implementation`, `typeDefinition`, `prepareCallHierarchy` are **cross-file** — pair with `waitForProgressToken` so background indexing completes first.
-- `hover`, `documentHighlight`, `prepareRename`, `selectionRange` are **file-local** — no project-wide wait needed (unless hovering an inherited member).
-- `prepareRename` returning `null` on a non-renameable position is correct; assert with `expect: { shape: null }`.
-- `documentHighlight` is intra-file only — not a `references` substitute.
-
----
+Validation:
+- `line`/`col` must point at the symbol identifier (not whitespace).
+- `waitForProgressToken` recommended for cross-file methods (`references`, `definition`, `declaration`, `implementation`, `typeDefinition`, `prepareCallHierarchy`).
+- `documentHighlight` is intra-file — `waitForProgressToken` not required.
+- `prepareRename` may legally return `null`; assert with `expect: { shape: null }`.
 
 ## Trigger-character methods
 
 ### `textDocument/completion`
 
-Method-unique knob: `trigger:` (informs the bench which trigger character fired). Cursor must be **after** the trigger character.
-
-#### Minimum
-
 ```yaml
-methods:
-  textDocument/completion:
-    trigger: "."
+# Schema: methods.textDocument/completion
+trigger:                string?                # required when fired by a trigger char (e.g. ".")
+line?:                  integer
+col?:                   integer
+expect?:                ExpectConfig           # `containsItems` is the typical assertion
+cold?:                  boolean
+didChange?:             FileSnapshot[]
+batch?:                 BatchStep[]
+didOpen?:               DidOpenStep[]
 ```
 
-#### Fully-decked-out
-
-```yaml
-methods:
-  textDocument/completion:
-    line: 135
-    col:  37                                  # immediately after the trigger char
-    trigger: "."                              # required for trigger-char completion
-    cold: true                                # optional
-    expect:                                   # optional
-      containsItems:
-        - label: addTax
-        - label: getRefund
-    didChange:                                # optional
-      - file: Target.v2.snapshot
-        line: 137
-        col:  37
-        trigger: "."
-        expect:
-          containsItems: [{ label: addTax }]
-```
+Validation:
+- `col` must be **after** the trigger character, not on it.
+- `trigger` value (string) must match the configured trigger character on the server (`.`, `(`, `,`, `[`, `:`, etc.).
 
 ### `textDocument/signatureHelp`
 
-Cursor inside the call's parens. Trigger characters are typically `(`, `,`, `[`.
-
-#### Minimum
-
 ```yaml
-methods:
-  textDocument/signatureHelp: {}
+# Schema: methods.textDocument/signatureHelp
+line?:                  integer
+col?:                   integer                # must be inside the call's parens
+expect?:                ExpectConfig
+cold?:                  boolean
+didChange?:             FileSnapshot[]
 ```
-
-#### Fully-decked-out
-
-```yaml
-methods:
-  textDocument/signatureHelp:
-    line: 137
-    col:  45                                  # inside func(arg1, |arg2)
-    expect: { contains: "function addTax" }
-```
-
-For active-parameter advancement, position after a comma: `func(arg1, |arg2)` → param index 1.
-
----
 
 ## Rename
 
 ### `textDocument/rename`
 
-Method-unique knob: `newName:`.
-
-#### Minimum
-
 ```yaml
-methods:
-  textDocument/rename:
-    newName: "renamedSymbol"
+# Schema: methods.textDocument/rename
+newName:                string                 # REQUIRED
+line?:                  integer
+col?:                   integer
+waitForProgressToken?:  string                 # required for cross-file edits
+expect?:                ExpectConfig           # `count` = number of files with edits
+cold?:                  boolean
+didChange?:             FileSnapshot[]
 ```
 
-#### Fully-decked-out
+Validation: `newName` must not collide with an existing symbol.
 
-```yaml
-methods:
-  textDocument/rename:
-    line: 70
-    col:  27
-    newName: "owner_renamed"                  # required
-    waitForProgressToken: "<token>"           # required for cross-file edits
-    expect: { count: 14 }                     # optional: number of files with edits
-    didChange:                                # optional: across an evolving file
-      - file: Target.v2.snapshot
-        line: 69
-        col:  27
-        expect: { count: 14 }
-      - file: Target.v3.snapshot
-        line: 69
-        col:  27
-        expect: { count: 16 }
-```
+## Range-based methods
 
-Returns the WorkspaceEdit; does **not** apply to disk. Use `workspace/willRenameFiles` for the apply-and-restore lifecycle.
-
----
-
-## Range-based (sub-range of a document)
-
-`startLine`/`startCol` mark the start; the method's `line`/`col` mark the end.
+`startLine` + `startCol` mark the start; the method's `line` + `col` mark the end.
 
 ### `textDocument/inlayHint`
 
-#### Minimum
-
 ```yaml
-initializeSettings:
-  inlayHints:
-    parameters: true                          # required — server gates hints on this
-
-methods:
-  textDocument/inlayHint:
-    startLine: 0
-    startCol:  0
-    line: 100                                 # endLine
-    col:  0                                   # endCol
+# Schema: methods.textDocument/inlayHint
+startLine:              integer                # REQUIRED — range start (line, 0-indexed)
+startCol:               integer                # REQUIRED — range start (col, 0-indexed)
+line:                   integer                # REQUIRED — range end (line)
+col:                    integer                # REQUIRED — range end (col)
+expect?:                ExpectConfig
+cold?:                  boolean
+didChange?:             FileSnapshot[]
 ```
 
-#### Fully-decked-out
-
-```yaml
-initializeSettings:
-  inlayHints:
-    parameters: true
-    gasEstimates: true
-
-methods:
-  textDocument/inlayHint:
-    startLine: 130
-    startCol:  0
-    line: 147                                 # endLine
-    col:  0                                   # endCol
-    expect: { minCount: 1 }
-```
+Requires `initializeSettings.inlayHints.parameters: true` (or similar server-specific gate) — otherwise the response is empty.
 
 ### `textDocument/semanticTokens/range`
 
-#### Minimum
-
 ```yaml
-methods:
-  textDocument/semanticTokens/range:
-    startLine: 0
-    startCol:  0
-    line: 100                                 # endLine
-    col:  0                                   # endCol
+# Schema: methods.textDocument/semanticTokens/range
+startLine:              integer                # REQUIRED
+startCol:               integer                # REQUIRED
+line:                   integer                # REQUIRED — range end
+col:                    integer                # REQUIRED — range end
+expect?:                ExpectConfig
+cold?:                  boolean
 ```
 
-#### Fully-decked-out
+## Whole-document methods
+
+`line`/`col` are placeholders (any value works — operation covers the whole document).
+
+Methods: `textDocument/formatting`, `textDocument/foldingRange`, `textDocument/documentLink`, `textDocument/documentSymbol`, `textDocument/codeLens`, `textDocument/diagnostic`, `textDocument/documentColor`, `textDocument/semanticTokens/full`, `textDocument/semanticTokens/full/delta`.
 
 ```yaml
-methods:
-  textDocument/semanticTokens/range:
-    startLine: 0
-    startCol:  0
-    line: 100
-    col:  0
-    expect: { minCount: 1 }
+# Schema: methods.textDocument/<whole-doc-method>
+expect?:                ExpectConfig
+cold?:                  boolean
+didChange?:             FileSnapshot[]         # idiomatic for `formatting` (send unformatted content)
 ```
 
-Range crossing only comments yields zero tokens — pick a representative ~50-line viewport.
-
----
-
-## Whole-document (no cursor needed)
-
-Applies to: `textDocument/formatting`, `textDocument/foldingRange`, `textDocument/documentLink`, `textDocument/documentSymbol`, `textDocument/codeLens`, `textDocument/diagnostic`, `textDocument/documentColor`, `textDocument/semanticTokens/full`, `textDocument/semanticTokens/full/delta`.
-
-### Minimum
-
-```yaml
-methods:
-  textDocument/foldingRange: {}
-  textDocument/documentSymbol: {}
-  textDocument/documentLink: {}
-  textDocument/semanticTokens/full: {}
-  # … etc
-```
-
-### Fully-decked-out — `textDocument/formatting`
-
-```yaml
-methods:
-  textDocument/formatting:
-    didChange:                                # send unformatted content first
-      - file: Target.unformatted.snapshot
-        line: 0
-        col:  0
-        expect: { minCount: 1 }
-```
-
-### Notes per method
-
-- `formatting` — pair with `didChange:` to send unformatted content; the formatter returns `TextEdit[]` to canonicalize it.
-- `documentSymbol` — server may return hierarchical `DocumentSymbol[]` or flat `SymbolInformation[]`. Bench treats both as flat for `minCount`.
-- `codeLens`, `documentColor`, `diagnostic` — many Solidity LSPs don't implement these. Add to top-level `exclude:` if they return null.
-- `semanticTokens/full/delta` — requires a prior `/full` request to seed; harness chains automatically. Some servers fall back to `/full` on stale state — timing then doesn't reflect a true delta.
-
----
+Validation:
+- `formatting` typically pairs with `didChange:` — sends an unformatted snapshot, asserts the formatter returns canonicalizing edits.
+- `semanticTokens/full/delta` requires a prior `/full` to seed; the harness chains.
+- `codeLens`, `documentColor`, `diagnostic` may return null on servers that don't implement them — add to top-level `exclude:` if so.
 
 ## Diagnostic-driven
 
 ### `textDocument/codeAction`
 
-Cursor on a position with an active diagnostic. Without one, the response is empty.
-
-#### Minimum
-
 ```yaml
-initializeSettings:
-  lint:
-    enabled: true                             # required to publish diagnostics
-
-methods:
-  textDocument/codeAction: {}
+# Schema: methods.textDocument/codeAction
+line?:                  integer                # cursor on a position with an active diagnostic
+col?:                   integer
+expect?:                ExpectConfig           # `titleContains` is the typical assertion
+cold?:                  boolean
+didChange?:             FileSnapshot[]
 ```
 
-#### Fully-decked-out
-
-```yaml
-initializeSettings:
-  lint:
-    enabled: true
-
-methods:
-  textDocument/codeAction:
-    line: 263
-    col:  8
-    expect: { titleContains: "Remove unused import" }
-```
-
----
+Without an active diagnostic at the cursor, the response is empty. Most quickfix-emitting code requires `initializeSettings.lint.enabled: true`.
 
 ## Call hierarchy (chained)
 
-`callHierarchy/incomingCalls` and `callHierarchy/outgoingCalls` require `prepareCallHierarchy` first to resolve the cursor. The harness chains automatically — only the second method needs configuring.
-
-### Minimum
+Both `callHierarchy/incomingCalls` and `callHierarchy/outgoingCalls` chain from `prepareCallHierarchy`. Configure the cursor on the chained method; the harness chains automatically.
 
 ```yaml
-methods:
-  callHierarchy/incomingCalls: {}
-  # or
-  callHierarchy/outgoingCalls: {}
+# Schema: methods.callHierarchy/(incomingCalls | outgoingCalls)
+line?:                  integer                # cursor on the function name
+col?:                   integer
+waitForProgressToken?:  string                 # required for cross-contract resolution
+expect?:                ExpectConfig
+cold?:                  boolean
+batch?:                 BatchStep[]
 ```
 
-### Fully-decked-out
-
-```yaml
-methods:
-  callHierarchy/incomingCalls:
-    line: 50
-    col:  20                                  # cursor on the function name
-    waitForProgressToken: "<token>"           # required for cross-contract resolution
-    expect: { minCount: 1 }
-    cold: true                                # optional
-```
-
-Notes:
-- If `prepareCallHierarchy` returns `null`, the chained call errors — fix the cursor.
-- Pure / leaf functions return empty `outgoingCalls` (correct).
-- Low-level dynamic calls (`.call()`, `.delegatecall()`) typically don't appear in `outgoingCalls` — they're resolver-opaque.
-
----
+Validation: if `prepareCallHierarchy` returns null at the cursor, the chained method errors. Fix the cursor.
 
 ## Workspace-scoped
 
 ### `workspace/symbol`
 
-Project-wide fuzzy symbol search. `file`/`line`/`col` are placeholders (any file works as the open anchor).
-
-#### Minimum
-
 ```yaml
-methods:
-  workspace/symbol: {}
+# Schema: methods.workspace/symbol
+waitForProgressToken?:  string                 # required for full coverage
+expect?:                ExpectConfig
+cold?:                  boolean
 ```
 
-#### Fully-decked-out
-
-```yaml
-methods:
-  workspace/symbol:
-    waitForProgressToken: "<token>"           # required for full coverage
-    expect: { minCount: 1 }
-```
-
-Default query is empty (returns all symbols).
+`file`/`line`/`col` are placeholders (search is project-wide). Default query is empty — returns all symbols.
 
 ### `workspace/executeCommand`
 
-Method-unique knobs: `command:` (required), `arguments:` (default `[]`), `waitForProgress:` (gate timing on background work).
-
-#### Minimum
-
 ```yaml
-methods:
-  workspace/executeCommand:
-    command: "<server>.reindex"
-    arguments: []
+# Schema: methods.workspace/executeCommand
+command:                string                 # REQUIRED — server-defined command name
+arguments:              any[]                  # default [] — forwarded as-is to the command handler
+waitForProgress?:       boolean                # default false — block on $/progress end after response
+expect?:                ExpectConfig           # `shape: null` matches commands that return null
+cold?:                  boolean
 ```
 
-#### Fully-decked-out
+Validation: `arguments` shape is server-specific; consult server docs.
+
+### File-operation lifecycles
 
 ```yaml
-methods:
-  workspace/executeCommand:
-    command: "<server>.reindex"
-    arguments: []
-    waitForProgress: true                     # block on $/progress end after response
-    expect: { shape: null }                   # most commands return null
+# Schema: methods.workspace/willRenameFiles
+renameSteps:            RenameStep[]           # REQUIRED, non-empty
+waitForProgressToken?:  string                 # required when LSP reindexes async after rename
+cold?:                  boolean
+
+# Schema: methods.workspace/willCreateFiles
+createSteps:            CreateStep[]           # REQUIRED, non-empty
+cold?:                  boolean
+
+# Schema: methods.workspace/willDeleteFiles
+deleteSteps:            DeleteStep[]           # REQUIRED, non-empty
+waitForProgressToken?:  string
+cold?:                  boolean
 ```
 
-### `workspace/willRenameFiles`, `workspace/willCreateFiles`, `workspace/willDeleteFiles`
-
-These run via lifecycle steps. Method-unique knobs: `renameSteps:`, `createSteps:`, `deleteSteps:` (each is its own step shape — see `lifecycle-tests` topic skill).
-
-#### Minimum
-
-```yaml
-initializeSettings:
-  fileOperations:
-    updateImportsOnRename: true
-    templateOnCreate: true
-    updateImportsOnDelete: true
-
-methods:
-  workspace/willRenameFiles:
-    renameSteps:
-      - { file: A.sol, newName: AA.sol }
-  workspace/willCreateFiles:
-    createSteps:
-      - { file: src/NewContract.sol }
-  workspace/willDeleteFiles:
-    deleteSteps:
-      - { file: src/ToBeDeleted.sol }
-```
-
-#### Fully-decked-out — `workspace/willRenameFiles`
-
-```yaml
-initializeSettings:
-  fileOperations:
-    updateImportsOnRename: true               # required
-
-methods:
-  workspace/willRenameFiles:
-    waitForProgressToken: "<token>"           # required when LSP reindexes async
-    renameSteps:
-      - { file: A.sol,  newName: AA.sol, expect: { count: 1 } }
-      - { file: AA.sol, newName: A.sol,  expect: { count: 1 } }
-      - { file: A.sol,  newName: AA.sol, expect: { count: 1 } }   # round-trip
-      - { file: AA.sol, newName: A.sol,  expect: { count: 1 } }
-```
-
-`expect.count` = number of *files* with edits.
+Required `initializeSettings.fileOperations` flags:
+- `updateImportsOnRename: true` for `willRenameFiles` to compute import edits
+- `templateOnCreate: true` for `willCreateFiles` to scaffold
+- `updateImportsOnDelete: true` for `willDeleteFiles` to clean up dependents
 
 ---
 
-## Method-knob compatibility matrix
+## Sub-type schemas
 
-Which cross-cutting knobs apply to which method?
+### `BatchStep`
 
-| Knob (topic skill) | Position | Range / whole-doc | Workspace |
+```yaml
+file:                   string                 # REQUIRED — relative to project root
+line:                   integer                # REQUIRED — 0-indexed
+col:                    integer                # REQUIRED — 0-indexed
+expect?:                ExpectConfig
+```
+
+### `FileSnapshot`
+
+Used in `didChange:`. Snapshot file holds the full edited content (not a diff).
+
+```yaml
+file:                   string                 # REQUIRED — snapshot filename
+line:                   integer                # REQUIRED — cursor in this snapshot
+col:                    integer                # REQUIRED
+trigger?:               string                 # for completion: trigger char fired in this step
+expect?:                ExpectConfig
+```
+
+### `DidOpenStep`
+
+```yaml
+file:                   string                 # REQUIRED — extra file to open mid-session
+line?:                  integer                # rarely set — request stays on top-level cursor
+col?:                   integer
+expect?:                ExpectConfig           # response after this file is opened
+```
+
+### `RenameStep`
+
+```yaml
+file:                   string                 # REQUIRED — file to rename, relative to project
+newName:                string                 # REQUIRED — new file name (or relative path)
+expect?:                ExpectConfig           # `count` = number of files with edits
+```
+
+### `CreateStep`
+
+```yaml
+file:                   string                 # REQUIRED — path to create, relative to project
+expect?:                ExpectConfig
+```
+
+### `DeleteStep`
+
+```yaml
+file:                   string                 # REQUIRED — path to delete, relative to project
+expect?:                ExpectConfig
+```
+
+### `ExpectConfig`
+
+Any subset of:
+
+```yaml
+minCount?:              integer                # response array has at least N entries
+count?:                 integer                # response array has exactly N entries
+file?:                  string                 # first response location's path ends with this
+line?:                  integer                # first response location's line equals this
+contains?:              string                 # response text/markdown includes this substring
+containsItems?:         { label: string }[]    # completion result includes ALL these labels
+titleContains?:         string                 # at least one CodeAction has a title containing this
+shape?:                 "null" | "array" | "object"
+```
+
+Used by `--verify` mode (`lsp-bench --verify -c <config>`). Without `--verify`, `expect:` is recorded for the report but doesn't influence exit status.
+
+---
+
+## Method-key compatibility matrix
+
+Quick lookup — which cross-cutting key applies to which method?
+
+| Cross-cutting key (topic skill) | Position | Range / whole-doc | Workspace |
 |---|---|---|---|
 | `expect:` (`assert-results`) | ✅ all | ✅ all | ✅ all |
 | `waitForProgressToken:` (`wait-for-token`) | ✅ when cross-file | ✅ rarely needed | ✅ for `symbol`, lifecycle |
@@ -442,12 +321,12 @@ Which cross-cutting knobs apply to which method?
 | `didChange:` (`evolve-the-file`) | ✅ all | ✅ all | rarely |
 | `didOpen:` (`extra-files`) | ✅ when testing cross-file discovery growth | rarely | rarely |
 | `cold:` (`cold-vs-warm`) | ✅ all | ✅ all | ✅ all |
-| `initializeSettings:` (`custom-init-settings`) | ✅ when feature gated (inlay, lint) | ✅ same | ✅ for fileOperations |
+| `initializeSettings:` (`custom-init-settings`) | ✅ when feature gated | ✅ same | ✅ for fileOperations |
 | `renameSteps`/`createSteps`/`deleteSteps` (`lifecycle-tests`) | n/a | n/a | ✅ for `will*Files` |
 
-## Method-unique knobs at a glance
+## Method-specific keys at a glance
 
-| Method | Unique knob | Required? |
+| Method | Specific key(s) | Required? |
 |---|---|---|
 | `textDocument/completion` | `trigger:` | when fired by trigger char |
 | `textDocument/rename` | `newName:` | yes |

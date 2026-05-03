@@ -5,7 +5,7 @@ description: Make the bench wait for a specific LSP `$/progress` token before se
 
 # Wait for an LSP progress token
 
-By default the bench fires the request as soon as diagnostics arrive — which can be before background work (indexing, cross-file symbol resolution, etc.) has settled. Two knobs control this.
+By default the bench fires the request as soon as diagnostics arrive — which can be before background work (indexing, cross-file symbol resolution, etc.) has settled. Two keys control this.
 
 ## Wait *before* the request — `waitForProgressToken`
 

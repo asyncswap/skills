@@ -7,27 +7,51 @@ description: Project layout, `servers.yaml` registry, and top-level config keys 
 
 `lsp-bench` reads two YAMLs: a **server registry** (once per project) and **bench configs** (one per scenario). Per-method skills cover the bench config; this skill covers the cross-cutting setup.
 
-## Top-level keys
+## Top-level config schema
 
-| Key                 | Default          | Notes |
-|---------------------|------------------|-------|
-| `project`           | `"."`            | Project root with `foundry.toml` etc. The bench `cd`s here. |
-| `file`              | `""`             | File to `didOpen` first, relative to `project`. |
-| `line` / `col`      | `102` / `15`     | 0-indexed cursor (LSP convention). Editor 1-indexed → subtract 1. |
-| `iterations`        | `10`             | Measured iterations. |
-| `warmup`            | `2`              | Discarded warmup iterations. |
-| `timeout`           | `10` (s)         | Per-request. Bump for `rename` / `willRenameFiles`. |
-| `index_timeout`     | `15` (s)         | Diagnostics / progress wait. Bump to `60`–`300` for large projects. |
-| `output`            | `"benchmarks"`   | Where `results.json` lands. |
-| `report`            | `null`           | Markdown report path; omit to skip. |
-| `benchmarks`        | `[]` = run all   | LSP methods to bench. Empty or `["all"]` runs every supported method. |
-| `exclude`           | `[]`             | Filter applied **after** `benchmarks` resolves. |
-| `methods`           | `{}`             | Per-method overrides (`line`, `col`, `expect`, `trigger`, `cold`, `batch`, `didOpen`, `renameSteps`, …). Only applied if the method is in the active list. |
-| `servers`           | `["mmsaki"]`     | Registry refs (`mmsaki`, `mmsaki@v0.1.20`) or inline `{ label, cmd, args }`. Multiple = side-by-side. |
-| `servers_file`      | auto-discovered  | Path to `servers.yaml`. Defaults: next to the config or under `benchmarks/`. |
-| `include`           | `[]`             | Sub-configs whose settings merge as defaults; this config wins on conflicts. Paths resolve relative to the including file. |
-| `initializeSettings`| `null`           | Object forwarded as `initializationOptions` in `initialize`. Mirrors the editor's settings block. |
-| `response_limit`    | `80`             | Bytes of each response embedded in `results.json`. |
+Every key the parser accepts at the root of a bench config. `?` = optional. Defaults match the lsp-bench source.
+
+```yaml
+# Schema: Config (root)
+project:            string                       # default "."        — project root, bench `cd`s here
+file:               string                       # default ""         — required in practice; relative to `project`
+line:               integer                      # default 102        — 0-indexed cursor; default for every method (overridable)
+col:                integer                      # default 15         — 0-indexed cursor; default for every method (overridable)
+iterations:         integer >= 0                 # default 10         — measured iterations
+warmup:             integer >= 0                 # default 2          — discarded warmup iterations
+timeout:            integer (seconds)            # default 10         — per-request timeout
+index_timeout:      integer (seconds)            # default 15         — diagnostics / progress wait
+output:             string (path)                # default "benchmarks"
+report:             string?                      # default null       — markdown report path; omit to skip
+benchmarks:         string[]                     # default []         — methods to run; [] or ["all"] = run every supported method
+exclude:            string[]                     # default []         — methods to skip (filters `benchmarks` result)
+methods:            map<string, MethodConfig>    # default {}         — per-method overrides; see `methods` skill
+servers:            ServerRef[]                  # default ["mmsaki"] — registry refs OR inline {label, cmd, args}
+servers_file:       string?                      # auto-discovered    — path to servers.yaml override
+include:            string[]                     # default []         — sub-configs to merge as defaults (this config wins)
+initializeSettings: object?                      # default null       — forwarded as initializationOptions
+response_limit:     integer                      # default 80         — bytes of each response embedded in results.json
+```
+
+### `line` / `col` defaults vs per-method overrides
+
+Top-level `line` and `col` define the **default cursor for every method**. Each `methods.<method>:` block can **override** them by setting its own `line`/`col`. If a method block omits them, it inherits from the top.
+
+```yaml
+file: src/Target.sol
+line: 22       # default cursor — used by every method below unless overridden
+col:  8
+
+methods:
+  textDocument/references: {}                # uses (22, 8)
+  textDocument/hover:                        # uses (22, 8) — same cursor, different method
+    expect: { contains: "@notice" }
+  textDocument/definition:                   # OVERRIDE — different position
+    line: 137
+    col:  32
+```
+
+Step-shaped values (`batch:`, `didChange:`, `didOpen:`, `renameSteps:`, etc.) take their own `line`/`col` per step. The method's own `line`/`col` is the baseline iteration; each step is one further iteration.
 
 ### `benchmarks` × `exclude` × `methods`
 

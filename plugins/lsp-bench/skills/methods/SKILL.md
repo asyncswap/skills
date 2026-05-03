@@ -12,7 +12,7 @@ Every key valid under a `methods.<method>:` block, per LSP method. Cross-cutting
 - `?` after a key name = optional
 - Top-level `line` / `col` are the **default cursor for every method**. Each method block can override.
 - `expect:` shape varies per method (see `assert-results` skill for full shape).
-- Sub-types (`BatchStep`, `FileSnapshot`, `DidOpenStep`, `RenameStep`, `CreateStep`, `DeleteStep`, `ExpectConfig`) are defined at the bottom.
+- Sub-types (`BatchFile`, `FileSnapshot`, `DidOpenFile`, `RenameFile`, `CreateFile`, `DeleteFile`, `ExpectConfig`) are defined at the bottom.
 
 ## Cross-cutting keys
 
@@ -26,9 +26,9 @@ cold:                  boolean                 # default false — fresh server 
 waitForProgressToken:  string?                 # block until $/progress end matches this token
 waitForProgress:       boolean                 # default false — wait for any $/progress end after the response
 expect:                ExpectConfig?           # response shape assertions
-batch:                 BatchStep[]             # default [] — multi-cursor probes (see `multi-file` skill)
+batch:                 BatchFile[]             # default [] — multi-cursor probes (see `multi-file` skill)
 didChange:             FileSnapshot[]          # default [] — snapshot sequence (see `evolve-the-file` skill)
-didOpen:               DidOpenStep[]           # default [] — open extras mid-session (see `extra-files` skill)
+didOpen:               DidOpenFile[]           # default [] — open extras mid-session (see `extra-files` skill)
 ```
 
 ## Position-based methods
@@ -45,9 +45,9 @@ col?:                   integer
 cold?:                  boolean
 waitForProgressToken?:  string
 expect?:                ExpectConfig
-batch?:                 BatchStep[]
+batch?:                 BatchFile[]
 didChange?:             FileSnapshot[]
-didOpen?:               DidOpenStep[]
+didOpen?:               DidOpenFile[]
 ```
 
 Validation:
@@ -69,8 +69,8 @@ col?:                   integer
 expect?:                ExpectConfig           # `containsItems` is the typical assertion
 cold?:                  boolean
 didChange?:             FileSnapshot[]
-batch?:                 BatchStep[]
-didOpen?:               DidOpenStep[]
+batch?:                 BatchFile[]
+didOpen?:               DidOpenFile[]
 ```
 
 Validation:
@@ -182,7 +182,7 @@ col?:                   integer
 waitForProgressToken?:  string                 # required for cross-contract resolution
 expect?:                ExpectConfig
 cold?:                  boolean
-batch?:                 BatchStep[]
+batch?:                 BatchFile[]
 ```
 
 Validation: if `prepareCallHierarchy` returns null at the cursor, the chained method errors. Fix the cursor.
@@ -217,16 +217,16 @@ Validation: `arguments` shape is server-specific; consult server docs.
 
 ```yaml
 # Schema: methods.workspace/willRenameFiles
-renameSteps:            RenameStep[]           # REQUIRED, non-empty
+renameSteps:            RenameFile[]           # REQUIRED, non-empty
 waitForProgressToken?:  string                 # required when LSP reindexes async after rename
 cold?:                  boolean
 
 # Schema: methods.workspace/willCreateFiles
-createSteps:            CreateStep[]           # REQUIRED, non-empty
+createSteps:            CreateFile[]           # REQUIRED, non-empty
 cold?:                  boolean
 
 # Schema: methods.workspace/willDeleteFiles
-deleteSteps:            DeleteStep[]           # REQUIRED, non-empty
+deleteSteps:            DeleteFile[]           # REQUIRED, non-empty
 waitForProgressToken?:  string
 cold?:                  boolean
 ```
@@ -241,7 +241,7 @@ Required `initializeSettings.fileOperations` flags:
 
 ## Sub-type schemas
 
-### `BatchStep`
+### `BatchFile`
 
 ```yaml
 file:                   string                 # REQUIRED — relative to project root
@@ -262,7 +262,7 @@ trigger?:               string                 # for completion: trigger char fi
 expect?:                ExpectConfig
 ```
 
-### `DidOpenStep`
+### `DidOpenFile`
 
 ```yaml
 file:                   string                 # REQUIRED — extra file to open mid-session
@@ -271,7 +271,7 @@ col?:                   integer
 expect?:                ExpectConfig           # response after this file is opened
 ```
 
-### `RenameStep`
+### `RenameFile`
 
 ```yaml
 file:                   string                 # REQUIRED — file to rename, relative to project
@@ -279,14 +279,14 @@ newName:                string                 # REQUIRED — new file name (or 
 expect?:                ExpectConfig           # `count` = number of files with edits
 ```
 
-### `CreateStep`
+### `CreateFile`
 
 ```yaml
 file:                   string                 # REQUIRED — path to create, relative to project
 expect?:                ExpectConfig
 ```
 
-### `DeleteStep`
+### `DeleteFile`
 
 ```yaml
 file:                   string                 # REQUIRED — path to delete, relative to project

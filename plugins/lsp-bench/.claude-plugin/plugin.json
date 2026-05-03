@@ -1,7 +1,7 @@
 {
   "name": "lsp-bench",
   "version": "0.1.0",
-  "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, and version comparisons.",
+  "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, version comparisons, and LSP session management — restart per benchmark (cold) or reuse one initialized session across steps (warm).",
   "author": {
     "name": "Asyncswap Labs",
     "email": "lsp@asyncswap.org",

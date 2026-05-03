@@ -20,7 +20,7 @@ Language server support for Solidity via [solidity-language-server](https://gith
 
 ### lsp-bench
 
-Test, validate, and benchmark performance of LSP servers using only YAML. Helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) configs for performance benchmarks (warm or cold-start), response assertions, multi-file consistency checks, benches across file edits, file-operation lifecycle tests, and side-by-side LSP version comparisons.
+Test, validate, and benchmark performance of LSP servers using only YAML. Helps you write [lsp-bench](https://github.com/asyncswap/lsp-bench) configs for performance benchmarks, response assertions, multi-file consistency checks, benches across file edits, file-operation lifecycle tests, and side-by-side LSP version comparisons. Manage how the LSP is run — restart it for every benchmark (cold) or reuse one initialized session across multiple steps (warm).
 
 ```
 /plugin install lsp-bench@asyncswap

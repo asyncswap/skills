@@ -34,6 +34,32 @@
       "source": "./plugins/solidity-language-server",
       "category": "development",
       "strict": false
+    },
+    {
+      "name": "lsp-bench",
+      "description": "Benchmark and validate LSP servers — config recipes, symmetry checks, replay, and version comparisons powered by lsp-bench",
+      "version": "0.1.0",
+      "author": {
+        "name": "mmsaki",
+        "email": "lsp@asyncswap.org",
+        "url": "https://github.com/asyncswap/lsp-bench"
+      },
+      "homepage": "https://github.com/asyncswap/lsp-bench",
+      "repository": "https://github.com/asyncswap/lsp-bench",
+      "license": "MIT",
+      "keywords": [
+        "lsp",
+        "language-server",
+        "benchmark",
+        "performance",
+        "regression",
+        "symmetry",
+        "correctness",
+        "solidity"
+      ],
+      "source": "./plugins/lsp-bench",
+      "category": "development",
+      "strict": false
     }
   ]
 }

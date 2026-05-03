@@ -26,4 +26,29 @@ methods:
       - { file: tests/Bar.t.sol, line: 266, col: 36 }    # .selector
 ```
 
+## Across edited snapshots (`didChange:`)
+
+Track ref count as the file evolves — useful when an edit adds/removes usages and you want to confirm the LSP picks them up.
+
+```yaml
+methods:
+  textDocument/references:
+    line: 70
+    col:  27
+    # owner — 14+ usages across the contract
+    didChange:
+      - file: Shop.v2.snapshot
+        line: 69
+        col:  27
+        # owner — same count (getPrice doesn't reference owner)
+      - file: Shop.v3.snapshot
+        line: 69
+        col:  27
+        # owner — cancelOrder uses onlyOwner (new indirect usage)
+      - file: Shop.v4.snapshot
+        line: 69
+        col:  27
+        # owner — both edits applied
+```
+
 Skipping `waitForProgressToken` races phase 2 → partial results that look like a bug.

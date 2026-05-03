@@ -55,6 +55,7 @@ A `benchmarks/servers.yaml` registry is auto-discovered for resolving server nam
 - **lifecycle-tests** — full file-rename / create / delete lifecycle via `renameFiles`, `createFiles`, `deleteFiles`
 - **custom-init-settings** — send custom configuration to the LSP via `initializeSettings:`
 - **commands** — invoke server-defined commands via `workspace/executeCommand`
+- **replay** — re-issue a captured LSP request from a previous run; bisect regressions across server versions
 
 ## License
 

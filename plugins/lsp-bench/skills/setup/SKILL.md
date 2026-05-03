@@ -96,6 +96,21 @@ benchmarks:
 
 Override registry path: `lsp-bench -c benchmarks/refs.yaml -s benchmarks/servers.yaml -v`
 
+## CLI flags
+
+```sh
+lsp-bench -c <config>.yaml [-s <servers>.yaml] [-v] [--verify]
+```
+
+| Flag | Effect |
+|---|---|
+| `-c <path>` / `--config` | Path to the bench config (default: `benchmark.yaml`). |
+| `-s <path>` / `--servers` | Override the `servers.yaml` registry path (default: auto-discovered next to the config or under `benchmarks/`). |
+| `-v` / `--verbose` | Stream the LSP's `window/logMessage` notifications, `$/progress` events, and stderr to the console as the bench runs. The fastest way to see what the LSP is actually doing — what it logged, when phase 1 / phase 2 / sub-cache loads ran, what diagnostics it published. Indispensable when a bench gets unexpected results. |
+| `--verify` | Evaluate every `expect:` assertion in the config and exit non-zero on any mismatch. Without this flag, `expect:` is recorded for the report but doesn't influence the exit status. |
+
+Subcommands (`init`, `inspect`, `replay`) are documented in their own skills (`replay`) or via `lsp-bench --help`.
+
 ## `servers.yaml`
 
 Define each LSP server once; reference by name in any config. Versions live under `versions:` and are reachable via `name@version`.

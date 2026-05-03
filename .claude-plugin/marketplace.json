@@ -37,7 +37,7 @@
     },
     {
       "name": "lsp-bench",
-      "description": "Benchmark and validate LSP servers — config recipes, symmetry checks, replay, and version comparisons powered by lsp-bench",
+      "description": "Test, validate, and benchmark performance of LSP servers using only YAML — powered by lsp-bench. Config scaffolding, multi-cursor consistency checks, replay, and version comparisons.",
       "version": "0.1.0",
       "author": {
         "name": "mmsaki",
@@ -53,7 +53,7 @@
         "benchmark",
         "performance",
         "regression",
-        "symmetry",
+        "consistency",
         "correctness",
         "solidity"
       ],

@@ -1,7 +1,7 @@
 {
   "name": "lsp-bench",
   "version": "0.1.0",
-  "description": "Benchmark and validate LSP servers from Claude Code — config scaffolding, multi-cursor consistency checks, replay, and version-comparison workflows powered by lsp-bench",
+  "description": "Test, validate, and benchmark performance of LSP servers from Claude Code — a YAML-only framework powered by lsp-bench. Config scaffolding, multi-cursor consistency checks, replay, and version-comparison workflows.",
   "author": {
     "name": "Asyncswap Labs",
     "email": "lsp@asyncswap.org",

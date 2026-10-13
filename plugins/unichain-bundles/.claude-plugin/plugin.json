@@ -1,0 +1,18 @@
+{
+  "name": "unichain-bundles",
+  "version": "0.1.0",
+  "description": "Prepare Unichain single-transaction bundles with execution windows and revert protection using eth-libs, independently of filler orders.",
+  "author": {
+    "name": "Async Swap",
+    "url": "https://github.com/asyncswap"
+  },
+  "repository": "https://github.com/asyncswap/skills",
+  "license": "MIT",
+  "keywords": [
+    "unichain",
+    "bundles",
+    "ethereum",
+    "eth-libs",
+    "agents"
+  ]
+}

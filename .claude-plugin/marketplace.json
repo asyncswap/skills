@@ -1,6 +1,6 @@
 {
   "name": "asyncswap",
-  "description": "Solidity development tools for Claude Code",
+  "description": "Solidity development and Async Swap agent tools",
   "owner": {
     "name": "Asyncswap Labs",
     "email": "lsp@asyncswap.org",
@@ -58,6 +58,48 @@
         "solidity"
       ],
       "source": "./plugins/lsp-bench",
+      "category": "development",
+      "strict": false
+    },
+    {
+      "name": "asyncswap-filler",
+      "version": "0.1.0",
+      "description": "Discover Async Swap orders, evaluate supplied USDC valuations, and prepare fills or Unichain bundles without signing or broadcasting.",
+      "author": {
+        "name": "Async Swap",
+        "url": "https://github.com/asyncswap"
+      },
+      "repository": "https://github.com/asyncswap/skills",
+      "license": "MIT",
+      "keywords": [
+        "asyncswap",
+        "filler",
+        "unichain",
+        "bundles",
+        "agents"
+      ],
+      "source": "./plugins/asyncswap-filler",
+      "category": "development",
+      "strict": false
+    },
+    {
+      "name": "unichain-bundles",
+      "version": "0.1.0",
+      "description": "Prepare Unichain single-transaction bundles with execution windows and revert protection using eth-libs, independently of filler orders.",
+      "author": {
+        "name": "Async Swap",
+        "url": "https://github.com/asyncswap"
+      },
+      "repository": "https://github.com/asyncswap/skills",
+      "license": "MIT",
+      "keywords": [
+        "unichain",
+        "bundles",
+        "ethereum",
+        "eth-libs",
+        "agents"
+      ],
+      "source": "./plugins/unichain-bundles",
       "category": "development",
       "strict": false
     }

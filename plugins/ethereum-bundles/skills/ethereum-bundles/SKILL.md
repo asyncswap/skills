@@ -2,7 +2,7 @@
 name: ethereum-bundles
 description: Prepare and simulate Ethereum mainnet Flashbots bundles or MEV-Share backruns using eth-libs. Use for Ethereum MEV bundle requests, relay authentication, replacement, and inclusion checks; use unichain-bundles for Unichain.
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 
 # Ethereum bundles
@@ -10,7 +10,10 @@ metadata:
 Prepare Ethereum bundles independently of Async Swap filler orders. Default to
 Flashbots `eth_sendBundle` for an ordered list of specified transactions. Choose
 MEV-Share `mev_sendBundle` when the task involves shared orderflow or its privacy
-and refund controls. Do not silently translate between formats.
+and refund controls. For Blink searcher orderflow use
+`@asyncswap/blink-rpc@0.0.1` and read [Blink routing](references/blink.md).
+Keep `@asyncswap/flashbots-rpc` for direct Flashbots/MEV-Share requests.
+Do not silently translate between formats.
 
 Read [the relay reference](references/relay.md) for eth-libs construction,
 authentication, and protocol differences. This skill supplies instructions, not

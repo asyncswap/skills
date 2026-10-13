@@ -105,7 +105,7 @@
     },
     {
       "name": "ethereum-bundles",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Prepare Ethereum Flashbots and MEV-Share bundles using eth-libs, with simulation and relay authentication guidance.",
       "author": {
         "name": "Async Swap",
@@ -127,7 +127,7 @@
     },
     {
       "name": "base-bundles",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "Prepare Base sequences, Flashblocks simulations, and provider-specific attribution bundles using eth-libs.",
       "author": {
         "name": "Async Swap",

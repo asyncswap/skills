@@ -38,30 +38,31 @@ Source: [Blink Base API](https://docs.blinklabs.xyz/blink/base/api-reference.md)
 
 ## Offline eth-libs construction
 
-Use `@asyncswap/jsonrpc@0.4.16` with a narrow provider-specific schema, rather
-than `FlashbotsClient`. This example only builds an attribution request. Its
-format checks do not decode signatures, authorize a backrun, or send anything.
-The URL is deliberately non-routable; execution needs separately verified
-provider configuration and authorization.
+Use `@asyncswap/blink-rpc@0.0.1` from eth-libs. During an unpublished checkout,
+run `bun run build:blink-rpc` in eth-libs and use its built package locally;
+verify npm availability before suggesting a registry install.
+The package validates wire format, not signatures or strategy safety.
 
 ```ts
-import { JsonRpcClient } from "@asyncswap/jsonrpc";
+import { BlinkAttributionClient, type Hex } from "@asyncswap/blink-rpc";
 
-type AttributionSpec = {
-  eth_sendBundle: {
-    params: [{ txs: string[]; bidWei: string }];
-    result: unknown;
-  };
-};
-export function prepareAttribution(targetHash: string, backruns: string[]) {
-  if (!/^0x[0-9a-fA-F]{64}$/.test(targetHash)) throw new Error("Invalid target hash");
-  if (!backruns.length || backruns.some(tx => !/^0x(?:[0-9a-fA-F]{2})+$/.test(tx))) {
-    throw new Error("Backrun bytes required; signed transaction validation is separate");
-  }
-  const rpc = new JsonRpcClient<AttributionSpec>("https://offline.invalid");
-  return rpc.buildRequest("eth_sendBundle", [{ txs: [targetHash, ...backruns], bidWei: "0" }]);
+export function prepareAttribution(targetHash: Hex, backruns: [Hex, ...Hex[]]) {
+  const client = new BlinkAttributionClient("base", "https://offline.invalid");
+  return client.buildBundle({ txs: [targetHash, ...backruns] });
 }
 ```
+
+This builds without network calls. For authorized attribution, configure
+`blinkEndpoint("base", apiKey)` and use `client.eth_sendBundle(bundle)`.
+Never log the credential-bearing URL. Attribution returns an unknown provider
+result; do not treat it as an inclusion receipt. The client does not forward
+transactions to the sequencer. `BlinkRpcError` exposes a code without raw
+provider messages. Direct `client.rpc` calls bypass wrapper validation and
+error sanitization. No automatic signing, fees, payments, or retries are added.
+
+Robinhood uses `BlinkAttributionClient("robinhood", blinkEndpoint("robinhood", apiKey))`
+with the same attribution shape but its own provider rules. Do not copy Base's
+priority-fee policy onto Robinhood. See [Robinhood searcher requirements](https://docs.blinklabs.xyz/blink/robinhood-chain/searchers.md).
 
 For simulation, build a separate `eth_simulateV1` request from decoded call
 objects matching the signed transactions. Do not send raw transaction strings

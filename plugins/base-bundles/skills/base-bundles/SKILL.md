@@ -2,14 +2,15 @@
 name: base-bundles
 description: Prepare Base transaction sequences, simulate them against Flashblocks state, and construct provider-specific attribution bundles using eth-libs. Use for Base MEV bundles and backruns; do not assume Ethereum Flashbots atomic submission semantics.
 metadata:
-  version: 0.1.0
+  version: 0.1.1
 ---
 
 # Base bundles
 
 Prepare Base workflows independently of Async Swap. Read
 [the provider reference](references/providers.md) before choosing a transport.
-This skill is guidance and offline request construction, not a signer or bot.
+Use `@asyncswap/blink-rpc@0.0.1` for Blink attribution construction and explicit
+submission. This skill is guidance, not a signer or bot.
 
 ## Choose the execution model
 

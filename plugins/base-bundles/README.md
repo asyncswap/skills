@@ -10,4 +10,4 @@ Independent of the Ethereum, Unichain, and filler skills; no signer or bot.
 ```
 
 For Codex, install the complete [skill directory](skills/base-bundles/SKILL.md)
-with its references. Offline examples use `@asyncswap/jsonrpc@0.4.16`.
+with its references. Offline examples use `@asyncswap/blink-rpc@0.0.1`.

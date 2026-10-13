@@ -52,6 +52,15 @@ See [setup and scope](plugins/ethereum-bundles/README.md).
 /plugin install ethereum-bundles@asyncswap
 ```
 
+### Base bundles
+
+Prepare Base sequences and Flashblocks simulations, with provider-specific Blink
+attribution guidance. See [scope and limitations](plugins/base-bundles/README.md).
+
+```
+/plugin install base-bundles@asyncswap
+```
+
 ## License
 
 MIT

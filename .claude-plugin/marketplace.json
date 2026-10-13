@@ -124,6 +124,28 @@
       "source": "./plugins/ethereum-bundles",
       "category": "development",
       "strict": false
+    },
+    {
+      "name": "base-bundles",
+      "version": "0.1.0",
+      "description": "Prepare Base sequences, Flashblocks simulations, and provider-specific attribution bundles using eth-libs.",
+      "author": {
+        "name": "Async Swap",
+        "url": "https://github.com/asyncswap"
+      },
+      "repository": "https://github.com/asyncswap/skills",
+      "license": "MIT",
+      "keywords": [
+        "base",
+        "bundles",
+        "flashblocks",
+        "mev",
+        "eth-libs",
+        "agents"
+      ],
+      "source": "./plugins/base-bundles",
+      "category": "development",
+      "strict": false
     }
   ]
 }

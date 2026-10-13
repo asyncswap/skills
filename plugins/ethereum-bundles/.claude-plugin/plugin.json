@@ -1,0 +1,19 @@
+{
+  "name": "ethereum-bundles",
+  "version": "0.1.0",
+  "description": "Prepare Ethereum Flashbots and MEV-Share bundles using eth-libs, with simulation and relay authentication guidance.",
+  "author": {
+    "name": "Async Swap",
+    "url": "https://github.com/asyncswap"
+  },
+  "repository": "https://github.com/asyncswap/skills",
+  "license": "MIT",
+  "keywords": [
+    "ethereum",
+    "flashbots",
+    "mev-share",
+    "bundles",
+    "eth-libs",
+    "agents"
+  ]
+}

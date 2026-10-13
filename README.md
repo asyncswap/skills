@@ -42,6 +42,16 @@ Prepare bounded, revert-protected Unichain bundle requests for transfers, swaps,
 /plugin install unichain-bundles@asyncswap
 ```
 
+### Ethereum bundles
+
+Prepare Ethereum mainnet Flashbots and MEV-Share bundles using eth-libs, with
+simulation and relay authentication guidance. Separate from Unichain bundles.
+See [setup and scope](plugins/ethereum-bundles/README.md).
+
+```
+/plugin install ethereum-bundles@asyncswap
+```
+
 ## License
 
 MIT

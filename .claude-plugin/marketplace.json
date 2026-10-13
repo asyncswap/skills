@@ -37,7 +37,7 @@
     },
     {
       "name": "lsp-bench",
-      "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, version comparisons, and LSP session management — restart per benchmark (cold) or reuse one initialized session across steps (warm).",
+      "description": "Test, validate, and benchmark performance of LSP servers using only YAML. Configs for benchmarks, response assertions, multi-file consistency checks, file-edit sequences, lifecycle tests, version comparisons, and LSP session management \u2014 restart per benchmark (cold) or reuse one initialized session across steps (warm).",
       "version": "0.1.0",
       "author": {
         "name": "mmsaki",
@@ -100,6 +100,28 @@
         "agents"
       ],
       "source": "./plugins/unichain-bundles",
+      "category": "development",
+      "strict": false
+    },
+    {
+      "name": "ethereum-bundles",
+      "version": "0.1.0",
+      "description": "Prepare Ethereum Flashbots and MEV-Share bundles using eth-libs, with simulation and relay authentication guidance.",
+      "author": {
+        "name": "Async Swap",
+        "url": "https://github.com/asyncswap"
+      },
+      "repository": "https://github.com/asyncswap/skills",
+      "license": "MIT",
+      "keywords": [
+        "ethereum",
+        "flashbots",
+        "mev-share",
+        "bundles",
+        "eth-libs",
+        "agents"
+      ],
+      "source": "./plugins/ethereum-bundles",
       "category": "development",
       "strict": false
     }

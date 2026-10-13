@@ -46,7 +46,8 @@ Prepare bounded, revert-protected Unichain bundle requests for transfers, swaps,
 
 Prepare Ethereum mainnet Flashbots and MEV-Share bundles using eth-libs, with
 simulation and relay authentication guidance. Separate from Unichain bundles.
-See [setup and scope](plugins/ethereum-bundles/README.md).
+Direct Flashbots/MEV-Share use `@asyncswap/flashbots-rpc`; Blink searcher
+workflows use `@asyncswap/blink-rpc@0.0.1`. See [setup and scope](plugins/ethereum-bundles/README.md).
 
 ```
 /plugin install ethereum-bundles@asyncswap
@@ -55,7 +56,8 @@ See [setup and scope](plugins/ethereum-bundles/README.md).
 ### Base bundles
 
 Prepare Base sequences and Flashblocks simulations, with provider-specific Blink
-attribution guidance. See [scope and limitations](plugins/base-bundles/README.md).
+attribution guidance using `@asyncswap/blink-rpc@0.0.1`. See
+[scope and limitations](plugins/base-bundles/README.md).
 
 ```
 /plugin install base-bundles@asyncswap

@@ -1,6 +1,6 @@
 {
   "name": "solidity-language-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Solidity language server for real-time code intelligence, diagnostics, and navigation in Claude Code",
   "author": {
     "name": "Asyncswap Labs",
@@ -24,8 +24,8 @@
   ],
   "lspServers": {
     "solidity": {
-      "command": "solidity-language-server",
-      "args": ["--stdio"],
+      "command": "forge",
+      "args": ["lsp", "--stdio"],
       "extensionToLanguage": {
         ".sol": "solidity"
       }

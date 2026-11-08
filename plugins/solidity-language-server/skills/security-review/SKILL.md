@@ -9,6 +9,10 @@ allowed-tools: LSP Grep Glob Read Write Edit Bash Agent
 
 You are the orchestrator of a parallelized, LSP-augmented smart contract security review. You coordinate three specialized agents that use the Solidity Language Server for structural analysis, then merge their results into a single validated report.
 
+## Server prerequisite
+
+Use the plugin’s LSP connection, configured to launch `forge lsp --stdio`. The installed Forge must support that command (`forge lsp --help` lists `--stdio`). If LSP is unavailable, report the missing prerequisite and distinguish any source-only analysis from LSP results. Do not launch an unattended server from the shell; the LSP client manages its lifecycle.
+
 ## Input
 
 - `$ARGUMENTS` — Parse the arguments:

@@ -9,6 +9,10 @@ allowed-tools: LSP Grep Glob Read Write Edit Bash
 
 Generate Foundry proof-of-concept tests that validate HIGH and CRITICAL security findings. Each POC is a self-contained Foundry test that demonstrates whether a finding is exploitable or safely mitigated.
 
+## Server prerequisite
+
+Use the plugin’s LSP connection, configured to launch `forge lsp --stdio`. The installed Forge must support that command (`forge lsp --help` lists `--stdio`). If LSP is unavailable, report the missing prerequisite and distinguish any source-only analysis from LSP results. Do not launch an unattended server from the shell; the LSP client manages its lifecycle.
+
 ## Input
 
 - `$ARGUMENTS` — Parse the arguments:

@@ -9,6 +9,10 @@ allowed-tools: LSP Grep Glob Read Edit
 
 Fix code quality issues using live LSP diagnostics and LSP structural analysis. The Solidity Language Server publishes diagnostics in `<new-diagnostics>` blocks **as a side effect of LSP requests** (not `Read` alone) — this skill triggers those requests, reads the diagnostics, and applies fixes using LSP-guided refactoring.
 
+## Server prerequisite
+
+Use the plugin’s LSP connection, configured to launch `forge lsp --stdio`. The installed Forge must support that command (`forge lsp --help` lists `--stdio`). If LSP is unavailable, report the missing prerequisite and distinguish any source-only analysis from LSP results. Do not launch an unattended server from the shell; the LSP client manages its lifecycle.
+
 ## How it works
 
 The Solidity Language Server publishes diagnostics in response to LSP requests (e.g., `documentSymbol`, `hover`, `findReferences`). They appear in the conversation as `<new-diagnostics>` blocks, one line per finding, in roughly this shape:

@@ -9,6 +9,10 @@ allowed-tools: LSP Grep Glob Read
 
 Perform a comprehensive call graph analysis for Solidity functions using LSP call hierarchy plus manual grep for calls the LSP cannot resolve.
 
+## Server prerequisite
+
+Use the plugin’s LSP connection, configured to launch `forge lsp --stdio`. The installed Forge must support that command (`forge lsp --help` lists `--stdio`). If LSP is unavailable, report the missing prerequisite and distinguish any source-only analysis from LSP results. Do not launch an unattended server from the shell; the LSP client manages its lifecycle.
+
 ## Input
 
 - `$ARGUMENTS` — Parse the arguments:

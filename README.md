@@ -12,7 +12,7 @@ Claude Code plugins and skills by [asyncswap](https://github.com/asyncswap).
 
 ### Solidity LSP
 
-Language server support for Solidity via [solidity-language-server](https://github.com/asyncswap/solidity-language-server). Adds skills for security review, call/entrypoint analysis, PoC generation, and code cleanup driven by live LSP diagnostics.
+Language server support for Solidity via `forge lsp --stdio`. Requires a Forge build whose `forge lsp --help` lists `--stdio`. Adds skills for security review, call/entrypoint analysis, PoC generation, and code cleanup driven by live LSP diagnostics.
 
 ```
 /plugin install solidity-language-server@asyncswap

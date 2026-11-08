@@ -9,6 +9,10 @@ allowed-tools: LSP Grep Glob Read
 
 Security-focused analysis of how user-controlled inputs flow through state-changing entrypoints into sensitive sinks (storage writes, external calls, token transfers, access control decisions).
 
+## Server prerequisite
+
+Use the plugin’s LSP connection, configured to launch `forge lsp --stdio`. The installed Forge must support that command (`forge lsp --help` lists `--stdio`). If LSP is unavailable, report the missing prerequisite and distinguish any source-only analysis from LSP results. Do not launch an unattended server from the shell; the LSP client manages its lifecycle.
+
 ## Input
 
 - `$ARGUMENTS` — Parse the arguments:

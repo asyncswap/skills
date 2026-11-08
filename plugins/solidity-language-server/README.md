@@ -4,11 +4,14 @@ A Claude Code plugin that provides Solidity language server support via [solidit
 
 ## Prerequisites
 
-Install the Solidity language server:
+Install a Forge build that supports `forge lsp --stdio`, and ensure `forge` is on PATH. Check support before using the plugin:
 
 ```sh
-curl -fsSL https://asyncswap.org/lsp/install.sh | sh
+forge --version
+forge lsp --help
 ```
+
+The help output must list `--stdio`. The plugin starts the server with `forge lsp --stdio`. If the command is unavailable, update your Forge installation to a build with LSP support; a version label alone does not establish support.
 
 ## Installation
 
